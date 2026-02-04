@@ -88,6 +88,7 @@ class CLSNewsMonitor:
             result: The analysis result
         """
         separator = "=" * 60
+        sub_separator = "-" * 60
         
         print(f"\n{separator}")
         print(f"📰 新闻快讯 | {news.display_time}")
@@ -101,7 +102,7 @@ class CLSNewsMonitor:
         
         print(separator)
         
-        # Display score with visual indicator
+        # Display overall score with visual indicator
         score_bar = "★" * result.score + "☆" * (10 - result.score)
         sentiment_emoji = "📈" if result.is_positive else "📉"
         
@@ -109,6 +110,29 @@ class CLSNewsMonitor:
         print(f"{sentiment_emoji} 市场影响: {'利好' if result.is_positive else '利空/中性'}")
         print(f"💡 分析: {result.analysis}")
         print(f"🎯 市场影响: {result.market_impact}")
+        
+        # Display stock-specific ratings if available
+        if result.has_stock_ratings:
+            print(sub_separator)
+            print("📌 个股影响评级:")
+            for rating in result.stock_ratings:
+                sentiment = "利好" if rating.is_positive else "利空"
+                rating_bar = "★" * rating.score + "☆" * (10 - rating.score)
+                print(f"   • {rating.stock_name}: {sentiment} {rating_bar} ({rating.score}/10)")
+                print(f"     原因: {rating.reason}")
+        
+        # Display industry ratings if available (first-principles analysis)
+        if result.has_industry_ratings:
+            print(sub_separator)
+            print("🏭 行业影响评级 (第一性原理分析):")
+            for rating in result.industry_ratings:
+                sentiment = "利好" if rating.is_positive else "利空"
+                rating_bar = "★" * rating.score + "☆" * (10 - rating.score)
+                print(f"   • {rating.industry_name}: {sentiment} {rating_bar} ({rating.score}/10)")
+                if rating.leader_stocks:
+                    print(f"     龙头股票: {', '.join(rating.leader_stocks)}")
+                print(f"     分析: {rating.reason}")
+        
         print(separator)
     
     def _display_stats(self) -> None:
