@@ -186,8 +186,13 @@ class EnhancedAnalyzer:
             score = int(score_match.group(1)) if score_match else 5
             score = max(1, min(10, score))
             
-            # Extract impact direction
-            is_positive = "利好" in response_text and "利空" not in response_text[:100]
+            # Extract impact direction from the structured '影响：' field
+            impact_direction_match = re.search(r"影响[：:]\s*(利好|利空|中性)", response_text)
+            if impact_direction_match:
+                is_positive = impact_direction_match.group(1) == "利好"
+            else:
+                # Fallback: check the entire response
+                is_positive = "利好" in response_text and "利空" not in response_text
             
             # Extract market impact
             impact_match = re.search(
@@ -283,10 +288,14 @@ class EnhancedAnalyzer:
                 direction_match.group(1) == "利好" if direction_match else True
             )
             
-            # Extract score
-            industry_score_match = re.search(
-                r"评分[：:]\s*(\d+)/10", response_text[response_text.find("行业"):]
-            )
+            # Extract score - look for industry score after "行业" keyword
+            industry_index = response_text.find("行业")
+            if industry_index >= 0:
+                industry_score_match = re.search(
+                    r"评分[：:]\s*(\d+)/10", response_text[industry_index:]
+                )
+            else:
+                industry_score_match = None
             score = (
                 int(industry_score_match.group(1)) if industry_score_match else 5
             )
@@ -391,7 +400,7 @@ class EnhancedAnalyzer:
         # Generate industry ratings using first-principles approach
         industry_ratings = []
         for industry, leaders in industry_keywords.items():
-            if industry in content or any(kw in content for kw in [industry]):
+            if industry in content:
                 industry_ratings.append(IndustryRating(
                     industry_name=industry,
                     is_positive=is_positive,

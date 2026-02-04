@@ -40,10 +40,16 @@ class QiniuCloudProvider(AIProvider):
         Args:
             access_key: Qiniu Cloud access key
             secret_key: Qiniu Cloud secret key
-            api_endpoint: Qiniu Cloud API endpoint URL
+            api_endpoint: Qiniu Cloud API endpoint URL (required when API is available)
+            
+        Note:
+            This is a placeholder implementation. The default endpoint and model
+            name are placeholders and should be updated when Qiniu Cloud AI API
+            documentation becomes available.
         """
         self._access_key = access_key
         self._secret_key = secret_key
+        # PLACEHOLDER: Update this endpoint when Qiniu Cloud AI API docs are available
         self._api_endpoint = api_endpoint or "https://api.qiniu.com/v1/ai/chat"
         self._session = requests.Session()
         self._initialized = self._initialize()
@@ -87,8 +93,10 @@ class QiniuCloudProvider(AIProvider):
             return None
         
         try:
-            # Note: Actual request format will depend on Qiniu API docs
+            # PLACEHOLDER: Update request format when Qiniu API docs are available
+            # The following payload structure is based on common AI API patterns
             payload = {
+                # PLACEHOLDER: Update model name when actual Qiniu model is known
                 "model": "qiniu-ai-model",
                 "messages": [
                     {"role": "user", "content": prompt}
@@ -103,7 +111,7 @@ class QiniuCloudProvider(AIProvider):
             response.raise_for_status()
             
             result = response.json()
-            # Note: Response parsing will depend on actual API response format
+            # PLACEHOLDER: Update response parsing when actual API format is known
             return result.get("choices", [{}])[0].get("message", {}).get("content")
             
         except requests.RequestException as e:

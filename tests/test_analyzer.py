@@ -54,7 +54,8 @@ class TestEnhancedAnalyzer(unittest.TestCase):
         self.assertTrue(ratings[0].is_positive)
         self.assertEqual(ratings[0].score, 8)
         self.assertIn("工商银行", ratings[0].leader_stocks)
-        self.assertIn("第一性原理", response_text)
+        # Verify that the reason contains first-principles analysis content
+        self.assertIn("息差", ratings[0].reason)
     
     def test_fallback_analysis_with_stocks(self):
         """Test fallback analysis generates stock ratings when stocks are present."""
