@@ -16,6 +16,14 @@ class Config:
     # GitHub Copilot settings
     github_token: Optional[str] = None
     
+    # AI Provider settings
+    ai_provider: str = "copilot"  # "copilot" or "qiniu"
+    
+    # Qiniu Cloud settings
+    qiniu_access_key: Optional[str] = None
+    qiniu_secret_key: Optional[str] = None
+    qiniu_api_endpoint: Optional[str] = None
+    
     # Scraper settings
     scrape_interval: int = 5  # seconds
     fetch_count: int = 1
@@ -38,6 +46,10 @@ class Config:
         
         return cls(
             github_token=os.getenv("GITHUB_TOKEN"),
+            ai_provider=os.getenv("AI_PROVIDER", "copilot"),
+            qiniu_access_key=os.getenv("QINIU_ACCESS_KEY"),
+            qiniu_secret_key=os.getenv("QINIU_SECRET_KEY"),
+            qiniu_api_endpoint=os.getenv("QINIU_API_ENDPOINT"),
             scrape_interval=int(os.getenv("SCRAPE_INTERVAL", "5")),
             fetch_count=int(os.getenv("FETCH_COUNT", "1")),
             request_timeout=int(os.getenv("REQUEST_TIMEOUT", "10")),
