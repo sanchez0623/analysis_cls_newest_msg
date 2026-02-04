@@ -57,6 +57,25 @@ class TestCLSScraper(unittest.TestCase):
         
         scraper.close()
     
+    def test_build_api_url_with_count(self):
+        """Test that the API URL is built correctly with custom count."""
+        scraper = CLSScraper()
+        
+        url = scraper._build_api_url(last_time=1234567890, count=20)
+        
+        # Should contain rn=20
+        self.assertIn("rn=20", url)
+        
+        # Verify signature is correct for count=20
+        import hashlib
+        params_str = "app=CailianpressWeb&last_time=1234567890&os=web&rn=20&sv=7.2.2"
+        sha1 = hashlib.sha1(params_str.encode("utf-8")).hexdigest()
+        expected_sign = hashlib.md5(sha1.encode("utf-8")).hexdigest()
+        
+        self.assertIn(f"sign={expected_sign}", url)
+        
+        scraper.close()
+
     @patch("requests.Session.get")
     def test_fetch_latest_news_success(self, mock_get):
         """Test successful news fetch."""

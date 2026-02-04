@@ -91,12 +91,15 @@ class CLSScraper:
         md5_hash = hashlib.md5(sha1_hash.encode("utf-8")).hexdigest()
         return md5_hash
     
-    def _build_api_url(self, last_time: Optional[int] = None) -> str:
+    def _build_api_url(
+        self, last_time: Optional[int] = None, count: Optional[int] = None
+    ) -> str:
         """
         Build the API URL with proper parameters and signature.
         
         Args:
             last_time: Unix timestamp for pagination (optional)
+            count: Number of items to fetch (optional, defaults to config)
             
         Returns:
             The complete API URL with signature
@@ -104,12 +107,15 @@ class CLSScraper:
         if last_time is None:
             last_time = int(time.time())
         
+        if count is None:
+            count = config.fetch_count
+        
         # Build parameter string (order matters for signature)
         params = {
             "app": config.cls_app,
             "last_time": last_time,
             "os": config.cls_os,
-            "rn": config.fetch_count,
+            "rn": count,
             "sv": config.cls_sv,
         }
         
@@ -207,13 +213,8 @@ class CLSScraper:
         Returns:
             List of NewsItem objects
         """
-        # Temporarily set fetch count
-        original_count = config.fetch_count
-        
         try:
-            url = self._build_api_url()
-            # Modify URL to fetch more items
-            url = url.replace(f"rn={original_count}", f"rn={count}")
+            url = self._build_api_url(count=count)
             
             data = self._make_request(url)
             
